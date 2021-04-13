@@ -10,15 +10,16 @@ POSE_PAIRS = [[1, 0], [1, 2], [1, 5], [2, 3], [3, 4], [5, 6], [6, 7], [1, 8], [8
               [12, 13], [0, 14], [0, 15], [14, 16], [15, 17]]
 
 #
-inWidth = 368
-inHeight = 368
+# inWidth = 368
+# inHeight = 368
 
-# inWidth = 168
-# inHeight = 168
+inWidth = 168
+inHeight = 168
 
 threshold = 0.3
 
 net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
+arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_ARUCO_ORIGINAL)
 
 def process(frame):
     global net
@@ -64,8 +65,10 @@ def process(frame):
 
         if points[partA] and points[partB]:
             cv2.line(frame, points[partA], points[partB], (0, 255, 255), 3, lineType=cv2.LINE_AA)
-            cv2.circle(frame, points[partA], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
-            cv2.circle(frame, points[partB], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
+            cv2.aruco.drawMarker(arucoDict, partA, inWidth, frame,1)
+            cv2.aruco.drawMarker(arucoDict, partB, inWidth, frame,1)
+            # cv2.circle(frame, points[partA], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
+            # cv2.circle(frame, points[partB], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
 
 
     cv2.putText(frame, "time taken = {:.2f} sec".format(time.time() - t), (50, 50), cv2.FONT_HERSHEY_COMPLEX, .8,
