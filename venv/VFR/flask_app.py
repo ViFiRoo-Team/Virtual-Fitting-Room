@@ -21,15 +21,14 @@ def gen():
         if frame is None:
             continue
 
-        processed_fram,_ = skeleton(frame)
+        processed_fram = skeleton(frame)
 
         (flag, encodedImage) = cv2.imencode(".jpg", processed_fram)
 
         if not flag:
             continue
 
-        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-               bytearray(encodedImage) + b'\r\n')
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
