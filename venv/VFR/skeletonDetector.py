@@ -65,11 +65,26 @@ def process(frame):
 
         if points[partA] and points[partB]:
             cv2.line(frame, points[partA], points[partB], (0, 255, 255), 3, lineType=cv2.LINE_AA)
-            cv2.aruco.drawMarker(arucoDict, partA, inWidth, frame,1)
-            cv2.aruco.drawMarker(arucoDict, partB, inWidth, frame,1)
-            # cv2.circle(frame, points[partA], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
-            # cv2.circle(frame, points[partB], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
+            cv2.circle(frame, points[partA], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
+            cv2.circle(frame, points[partB], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
 
+
+    # ids = []
+    # for pair in POSE_PAIRS:
+    #     partA = pair[0]
+    #     partB = pair[1]
+    #
+    #     ids.append(partA)
+    #     ids.append(partB)
+    #
+    # srcMat = []
+    # for pnt in points:
+    #     dstMat.append(pnt)
+    #
+    # srcMat = np.array(srcMat)
+    #
+    # (srcH, srcW) = source.shape[:2]
+    # srcMat = np.array([[0, 0], [srcW, 0], [srcW, srcH], [0, srcH]])
 
     cv2.putText(frame, "time taken = {:.2f} sec".format(time.time() - t), (50, 50), cv2.FONT_HERSHEY_COMPLEX, .8,
                 (255, 50, 0), 2, lineType=cv2.LINE_AA)
@@ -78,4 +93,17 @@ def process(frame):
 
 
 def skeleton(frame):
-    return process(frame)
+    img = cv2.imread('muscle-human-body.jpg')
+    input_img, input_points = process(img)
+    frame, frame_points = process(frame)
+
+
+    input_points = np.float32([kp for kp in input_points])
+    frame_points = np.float32([kp for kp in frame_points])
+
+    if len(frame_points) == len(input_points):
+        (H, _) = cv2.findHomography(frame_points, input_points, cv2.RANSAC)
+        warped = cv2.warpPerspective(frame, H, (inWidth, inHeight))
+        return warped
+
+    return None
